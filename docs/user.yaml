@@ -1,0 +1,143 @@
+paths:
+    /api/v1/users/me:
+        get:
+            tags:
+                - User
+            summary: "Get logged-in user's profile"
+            description: "Retrieve the profile information of the authenticated user."
+            security:
+                - ApiKeyAuth: []
+            responses:
+                200:
+                    description: "User profile retrieved successfully"
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    user:
+                                        $ref: "#/components/schemas/User"
+                401:
+                    description: "Unauthorized or missing token"
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        example: "Unauthorized or token not provided"
+
+    /api/v1/users:
+        post:
+            tags:
+                - User
+            summary: "Create a new user account"
+            description: "Register a new user with a unique email, fullname, and password."
+            requestBody:
+                description: "Payload for creating a new user"
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/CreateUserRequest"
+            responses:
+                201:
+                    description: "User successfully created"
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    detail:
+                                        type: string
+                                        example: "user successfully created"
+                                    user:
+                                        $ref: "#/components/schemas/User"
+                400:
+                    description: "Validation error"
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        example: "Validation error message"
+                409:
+                    description: "Email already in use"
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        example: "This email has already been used"
+
+        delete:
+            tags:
+                - User
+            summary: "Delete logged-in user's account"
+            description: "Delete the account of the authenticated user."
+            security:
+                - ApiKeyAuth: []
+            responses:
+                200:
+                    description: "Account successfully deleted"
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    detail:
+                                        type: string
+                                        example: "account has been successfully deleted"
+                401:
+                    description: "Unauthorized or missing token"
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        example: "Unauthorized or token not provided"
+
+components:
+    schemas:
+        User:
+            type: object
+            properties:
+                id:
+                    type: string
+                    example: 6541070b25fe792073b67380
+                fullname:
+                    type: string
+                    example: "Jessica Smith"
+                email:
+                    type: string
+                    example: "jessicaSmith@mainstack.com"
+                createdAt:
+                    type: string
+                    format: date-time
+                updatedAt:
+                    type: string
+                    format: date-time
+
+        CreateUserRequest:
+            type: object
+            required:
+                - fullname
+                - email
+                - password
+            properties:
+                fullname:
+                    type: string
+                    example: "Jessica Smith"
+                email:
+                    type: string
+                    example: "jessicaSmith@mainstack.com"
+                password:
+                    type: string
+                    example: "SecureP@ssw0rd"

@@ -1,0 +1,54 @@
+paths:
+    /api/v1/auth:
+        post:
+            tags:
+                - Authentication
+            summary: "Authenticate a user and generate a token"
+            description: "Verify the user's email and password and return an access token if the credentials are valid."
+            requestBody:
+                description: "Payload containing the email and password for authentication"
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/AuthRequest"
+            responses:
+                200:
+                    description: "Authentication successful, access token generated"
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    accessToken:
+                                        type: string
+                                        example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                                    user:
+                                        $ref: "#/components/schemas/User"
+                400:
+                    description: "Invalid email or password"
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        example: "invalid email or password"
+
+components:
+    schemas:
+        AuthRequest:
+            type: object
+            required:
+                - email
+                - password
+            properties:
+                email:
+                    type: string
+                    format: email
+                    example: "jessicaSmith@mainstack.com"
+                password:
+                    type: string
+                    format: password
+                    example: "SecureP@ssw0rd"

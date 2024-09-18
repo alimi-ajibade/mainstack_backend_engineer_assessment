@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: mainstacks-stock
+    ports:
+      - '8000:8000'
+    volumes:
+      - .:/usr/src/app
+    environment:
+      - MAINSTACK_DB=mongodb://db:27017/mainstack
+    depends_on:
+      - db
+    networks:
+      - mainstack-network
+    restart: always
+
+  db:
+    image: mongo:7.0.11-jammy
+    container_name: mongo-db
+    ports:
+      - '27017:27017'
+    volumes:
+      - db-data:/data/db
+    networks:
+      - mainstack-network
+    restart: always
+
+volumes:
+  db-data:
+
+networks:
+  mainstack-network:
+    driver: bridge

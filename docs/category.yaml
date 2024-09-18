@@ -1,0 +1,234 @@
+paths:
+    /api/v1/categories:
+        get:
+            tags:
+                - Category
+            summary: "Fetch all categories"
+            description: "Retrieve a list of all categories."
+            security:
+                - ApiKeyAuth: []
+            responses:
+                200:
+                    description: "Categories retrieved successfully"
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: "#/components/schemas/Category"
+
+        post:
+            tags:
+                - Category
+            summary: "Create a new category"
+            description: "Add a new category."
+            security:
+                - ApiKeyAuth: []
+            requestBody:
+                description: "Payload for creating a category"
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/CreateCategoryRequest"
+            responses:
+                201:
+                    description: "Category successfully created"
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    detail:
+                                        type: string
+                                        example: "category successfully created"
+                                    category:
+                                        $ref: "#/components/schemas/Category"
+                400:
+                    description: "Validation failed"
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        example: "Validation error message"
+                409:
+                    description: "Category already exists"
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        example: 'category with title "Office equipment" already exist'
+
+    /api/v1/categories/{id}:
+        get:
+            tags:
+                - Category
+            summary: "Get a category by ID"
+            description: "Retrieve category details by its unique ID."
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  schema:
+                      type: string
+                  description: "The unique ID of the category"
+            responses:
+                200:
+                    description: "Category retrieved successfully"
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    category:
+                                        $ref: "#/components/schemas/Category"
+                404:
+                    description: "Category not found"
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        example: "no category with given id"
+
+        put:
+            tags:
+                - Category
+            summary: "Update a category by ID"
+            description: "Update the title of a category using its unique ID."
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  schema:
+                      type: string
+                  description: "The unique ID of the category"
+            requestBody:
+                description: "Payload for updating a category"
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/CreateCategoryRequest"
+            responses:
+                200:
+                    description: "Category updated successfully"
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    detail:
+                                        type: string
+                                        example: "category successfully updated"
+                                    category:
+                                        $ref: "#/components/schemas/Category"
+                400:
+                    description: "Validation error or category already exists"
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        example: "Validation error message or category already exists"
+                404:
+                    description: "Category not found"
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        example: "no category with given id"
+                409:
+                    description: "Category with this title already exists"
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        example: 'category with title "Office equipment" already exist'
+
+        delete:
+            tags:
+                - Category
+            summary: "Delete a category by ID"
+            description: "Delete a category using its unique ID, only if no product is associated with it."
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  schema:
+                      type: string
+                  description: "The unique ID of the category"
+            responses:
+                200:
+                    description: "Category deleted successfully"
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    detail:
+                                        type: string
+                                        example: "category deleted"
+                400:
+                    description: "Category is associated with products"
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        example: "Category cannot be deleted because it is associated with X product(s)."
+                404:
+                    description: "Category not found"
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        example: "no category with given id"
+
+components:
+    schemas:
+        Category:
+            type: object
+            properties:
+                id:
+                    type: string
+                    example: 6541070b25fe792073b67380
+                title:
+                    type: string
+                    example: "Office equipment"
+
+        CreateCategoryRequest:
+            type: object
+            required:
+                - title
+            properties:
+                title:
+                    type: string
+                    example: "Office equipment"

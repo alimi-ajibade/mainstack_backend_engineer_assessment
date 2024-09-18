@@ -1,0 +1,310 @@
+paths:
+    /api/v1/products:
+        get:
+            tags:
+                - Product
+            summary: "Fetch products with pagination and filters"
+            description: "Retrieve a list of products based on category, price range, and search query, with pagination support."
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - in: query
+                  name: searchQuery
+                  schema:
+                      type: string
+                  description: "Search term to filter products"
+                - in: query
+                  name: category
+                  schema:
+                      type: string
+                  description: "Filter products by category"
+                - in: query
+                  name: minPrice
+                  schema:
+                      type: number
+                  description: "Filter products with a minimum price"
+                - in: query
+                  name: maxPrice
+                  schema:
+                      type: number
+                  description: "Filter products with a maximum price"
+                - in: query
+                  name: page
+                  schema:
+                      type: integer
+                      default: 1
+                  description: "Page number for pagination"
+                - in: query
+                  name: limit
+                  schema:
+                      type: integer
+                      default: 10
+                  description: "Number of items per page"
+            responses:
+                200:
+                    description: "Successful response with a list of products"
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    page:
+                                        type: integer
+                                    limit:
+                                        type: integer
+                                    totalPages:
+                                        type: integer
+                                    totalProducts:
+                                        type: integer
+                                    products:
+                                        type: array
+                                        items:
+                                            $ref: "#/components/schemas/Product"
+        post:
+            tags:
+                - Product
+            summary: "Create a new product"
+            description: "Add a new product with details such as title, description, category, unit price, and inventory."
+            security:
+                - ApiKeyAuth: []
+            requestBody:
+                description: "Payload for creating a product"
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/CreateProductRequest"
+            responses:
+                201:
+                    description: "Product successfully created"
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    detail:
+                                        type: string
+                                        example: "Product successfully created"
+                                    product:
+                                        $ref: "#/components/schemas/Product"
+                400:
+                    description: "Invalid input, validation failed"
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        example: "Validation error message"
+                409:
+                    description: "Category not found or invalid"
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        example: "Invalid category"
+
+    /api/v1/products/{id}:
+        get:
+            tags:
+                - Product
+            summary: "Get a product by ID"
+            description: "Retrieve a product's details by its unique ID."
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  schema:
+                      type: string
+                  description: "The unique ID of the product"
+            responses:
+                200:
+                    description: "Product retrieved successfully"
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    product:
+                                        $ref: "#/components/schemas/Product"
+                404:
+                    description: "Product not found"
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        example: "No product with given ID"
+
+        put:
+            tags:
+                - Product
+            summary: "Update a product by ID"
+            description: "Update product details such as title, description, category, inventory, and unit price by its unique ID."
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  schema:
+                      type: string
+                  description: "The unique ID of the product"
+            requestBody:
+                description: "Payload for updating a product"
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/UpdateProductRequest"
+            responses:
+                200:
+                    description: "Product updated successfully"
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    product:
+                                        $ref: "#/components/schemas/Product"
+                400:
+                    description: "Invalid input, validation failed or category not found"
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        example: "Validation error message or Category not found"
+                404:
+                    description: "Product not found"
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        example: "Product not found"
+        delete:
+            tags:
+                - Product
+            summary: "Delete a product by ID"
+            description: "Delete a product from the database using its unique ID."
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  schema:
+                      type: string
+                  description: "The unique ID of the product to be deleted"
+            responses:
+                200:
+                    description: "Product deleted successfully"
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    detail:
+                                        type: string
+                                        example: "Product deleted successfully"
+                404:
+                    description: "Product not found"
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        example: "Product not found"
+
+components:
+    schemas:
+        Product:
+            type: object
+            properties:
+                id:
+                    type: string
+                    example: "6541070b25fe792073b67380"
+                title:
+                    type: string
+                    example: "Corsair gaming chair"
+                description:
+                    type: string
+                    example: "Simple, elegant, comfortable chair with lumbar support"
+                unit_price:
+                    type: number
+                    example: 203405.00
+                inventory:
+                    type: integer
+                    example: 2
+                category:
+                    type: object
+                    properties:
+                        id:
+                            type: string
+                            example: "6541070b25fe792073b67380"
+                        title:
+                            type: string
+                            example: "Office equipment"
+        CreateProductRequest:
+            type: object
+            required:
+                - title
+                - description
+                - categoryId
+                - unit_price
+                - inventory
+            properties:
+                title:
+                    type: string
+                    example: "Corsair gaming chair"
+                description:
+                    type: string
+                    example: "Simple, elegant, comfortable chair with lumbar support"
+                categoryId:
+                    type: string
+                    example: "6541070b25fe792073b67380"
+                unit_price:
+                    type: number
+                    example: 203405.00
+                inventory:
+                    type: integer
+                    example: 2
+        UpdateProductRequest:
+            type: object
+            required:
+                - title
+                - description
+                - categoryId
+                - unit_price
+                - inventory
+            properties:
+                title:
+                    type: string
+                    example: "Corsair gaming chair"
+                description:
+                    type: string
+                    example: "Simple, elegant, comfortable chair with lumbar support"
+                unit_price:
+                    type: number
+                    example: 203405.00
+                inventory:
+                    type: integer
+                    example: 5
+                categoryId:
+                    type: string
+                    example: "6541070b25fe792073b67380"
